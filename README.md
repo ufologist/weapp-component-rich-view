@@ -172,6 +172,8 @@ export default {
 <style lang="less"></style>
 ```
 
+![demo](https://user-images.githubusercontent.com/167221/58071011-bebbc680-7bcd-11e9-9906-7bd103fddab4.png)
+
 ## 原理
 
 * 通过 `rich-text` 来显示 `HTML` 的内容(传入 HTML 字符串)
