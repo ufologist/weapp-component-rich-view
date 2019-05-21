@@ -1,0 +1,27 @@
+{
+  "name": "weapp-component-rich-view",
+  "version": "1.0.0",
+  "description": "微信小程序富文本渲染组件",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ufologist/weapp-component-rich-view.git"
+  },
+  "keywords": [
+    "weapp",
+    "rich",
+    "html"
+  ],
+  "author": "Sun",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ufologist/weapp-component-rich-view/issues"
+  },
+  "homepage": "https://github.com/ufologist/weapp-component-rich-view#readme",
+  "dependencies": {
+    "weapp-commons-util": "0.0.4"
+  }
+}
