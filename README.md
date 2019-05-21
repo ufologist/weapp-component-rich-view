@@ -1,6 +1,15 @@
 # weapp-component-rich-view
 
-微信小程序富文本渲染组件
+[![NPM version][npm-image]][npm-url] [![changelog][changelog-image]][changelog-url] [![license][license-image]][license-url]
+
+[npm-image]: https://img.shields.io/npm/v/weapp-component-rich-view.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/weapp-component-rich-view
+[license-image]: https://img.shields.io/github/license/ufologist/weapp-component-rich-view.svg
+[license-url]: https://github.com/ufologist/weapp-component-rich-view/blob/master/LICENSE
+[changelog-image]: https://img.shields.io/badge/CHANGE-LOG-blue.svg?style=flat-square
+[changelog-url]: https://github.com/ufologist/weapp-component-rich-view/blob/master/CHANGELOG.md
+
+微信小程序富文本(HTML)渲染组件
 * 适用于公众号文章类似的图文内容, 让运营人员可以灵活编辑
 * 可自定义按钮的行为, 例如触发分享, 跳转页面等等
 
@@ -26,7 +35,8 @@ Content 基础属性, 即内容的公共属性
 `html` 类型的内容的特有属性
 * `content`: 可以直接使用 `content` 属性来放置 HTML 的内容, 会优先使用
 * `src`: 或者引用远程 HTML 文件的路径 - `{string}`
-* `optimizeImgTag`: 是否优化 HTML 内容中的 img 标签, 默认为 `true` - `{boolean}`
+* `optimizeImgTag`: 是否优化 HTML 内容中的 `img` 标签, 默认为 `true` - `{boolean}`
+* `optimizeSectionTag`: 是否优化 HTML 内容中的 `section` 标签, 默认为 `true` - `{boolean}`
 
 `button` 类型的内容的特有属性
 * `behavior`: 按钮的行为, 需要结合 `openType` 来使用 - `{string}`
@@ -41,71 +51,126 @@ Content 基础属性, 即内容的公共属性
   * 在调用 `wx.xxx` 方法时可能需要的额外参数, 例如: 配置 `openType` 为 `wx.navigateTo` 时, 需要配置 `options: {url: '/pages/path/to?param=1'}`, 具体的选项与微信小程序的 API 文档保持一致
   * 或抛出事件时外部可能需要的额外参数
 
-### contents 示例
+## 使用方法
 
-```javascript
-[{
-    "type": "html",
-    "content": "<p style='color:red'>test</p>" // 直接放置 HTML 内容
-}, {
-    "type": "html",
-    "src": "https://domain.com/test.html"      // 引用远程 HTML 文件的路径
-}, {
-    "type": "button",
-    "content": "打开客服",
-    "behavior": "weapp",                       // 开放能力的按钮
-    "openType": "contact",                     // 开发能力的类型
-    "style": {
-        "position": "absolute",
-        "top": "848rpx",
-        "left": "235rpx",
-        "width": "260rpx",
-        "height": "50rpx",
-        "line-height": "50rpx",
-        "background-color": "#FF9800",
-        "color": "#fff",
-        "font-size": "24rpx"
-    }
-}, {
-    "type": "button",
-    "content": "立即开始",
-    "behavior": "custom",                      // 自定义的按钮
-    "openType": "test",                        // 自定义按钮的类型
-    "style": {
-        "position": "absolute",
-        "top": "548rpx",
-        "left": "235rpx",
-        "width": "260rpx",
-        "height": "50rpx",
-        "line-height": "50rpx",
-        "background-color": "#FF9800",
-        "color": "#fff",
-        "font-size": "24rpx"
-    }
-}, {
-    "type": "button",
-    "content": "跳转页面",
-    "behavior": "custom",                      // 自定义的按钮
-    "openType": "wx.navigateTo",               // 调用 wx.xxx API
-    "options": {                               // 调用的额外参数
-        "url": "/pages/detail/detail?fileName=detail"
-    },
-    "style": {
-        "position": "absolute",
-        "top": "448rpx",
-        "left": "235rpx",
-        "width": "260rpx",
-        "height": "50rpx",
-        "line-height": "50rpx",
-        "background-color": "#FF9800",
-        "color": "#fff",
-        "font-size": "24rpx"
-    }
-}]
-```
+PS: 目前适用于 [Min](https://github.com/meili/min-cli) 来构建的小程序项目接入, 对于原生小程序项目或者其他构建方式, 请手工 copy 代码 :(
+
+* 安装组件
+
+  ```
+  npm install weapp-component-rich-view --save
+  ```
+
+* 引用组件(在页面中引用自定义组件)
+
+  ```json
+  "usingComponents": {
+      "weapp-component-rich-view": "weapp-component-rich-view"
+  }
+  ```
+
+* 使用组件(在页面中使用自定义组件)
+
+  ```html
+  <weapp-component-rich-view></weapp-component-rich-view>
+  ```
 
 ## 示例
 
+```html
+<template>
+<view>
+    <weapp-component-rich-view contents="{{contents}}" loadHtmlContent="{{loadHtmlContent}}" bindclickbutton="handleClickButton"></weapp-component-rich-view>
+</view>
+</template>
+
+<script>
+export default {
+    config: {
+        usingComponents: {
+            'weapp-component-rich-view': 'weapp-component-rich-view'
+        }
+    },
+    data: {
+        contents: [{
+            "type": "html",
+            "content": "<p style='color:red'>test</p>" // 直接放置 HTML 内容
+        }, {
+            "type": "html",
+            "src": "https://domain.com/test.html"      // 引用远程 HTML 文件的路径
+        }, {
+            "type": "button",
+            "content": "打开客服",
+            "behavior": "weapp",                       // 开放能力的按钮
+            "openType": "contact",                     // 开发能力的类型
+            "style": {
+                "position": "absolute",
+                "top": "848rpx",
+                "left": "235rpx",
+                "width": "260rpx",
+                "height": "50rpx",
+                "line-height": "50rpx",
+                "background-color": "#FF9800",
+                "color": "#fff",
+                "font-size": "24rpx"
+            }
+        }, {
+            "type": "button",
+            "content": "立即开始",
+            "behavior": "custom",                      // 自定义的按钮
+            "openType": "test",                        // 自定义按钮的类型
+            "style": {
+                "position": "absolute",
+                "top": "548rpx",
+                "left": "235rpx",
+                "width": "260rpx",
+                "height": "50rpx",
+                "line-height": "50rpx",
+                "background-color": "#FF9800",
+                "color": "#fff",
+                "font-size": "24rpx"
+            }
+        }, {
+            "type": "button",
+            "content": "跳转页面",
+            "behavior": "custom",                      // 自定义的按钮
+            "openType": "wx.navigateTo",               // 调用 wx.xxx API
+            "options": {                               // 调用的额外参数
+                "url": "/pages/path/to?param=1"
+            },
+            "style": {
+                "position": "absolute",
+                "top": "448rpx",
+                "left": "235rpx",
+                "width": "260rpx",
+                "height": "50rpx",
+                "line-height": "50rpx",
+                "background-color": "#FF9800",
+                "color": "#fff",
+                "font-size": "24rpx"
+            }
+        }],
+        loadHtmlContent: function(src, content) {
+            return new Promise(function(resolve, reject) {
+                wx.request({
+                    url: src,
+                    success: function(requestResult) {
+                        resolve(requestResult.data);
+                    }
+                });
+            });
+        },
+    },
+    handleClickButton: function(event) {
+        var button = event.detail;
+        if (button.behavior === 'custom' && button.openType === 'test') {
+            console.log('test');
+        }
+    }
+};
+</script>
+<style lang="less"></style>
+```
 
 ## 原理
 
