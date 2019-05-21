@@ -83,7 +83,15 @@ export default {
             }
         },
         showHtmlContent: function(htmlContents) {
-            htmlContents.forEach(function(item) {
+            htmlContents.forEach((item) => {
+                if (item.content) {
+                    if (item.optimizeImgTag !== false) {
+                        item.content = this._optimizeImgTag(item.content);
+                    }
+                    if (item.optimizeSectionTag !== false) {
+                        item.content = this._optimizeSectionTag(item.content);
+                    }
+                }
                 item.style = getCssString(item.style);
             });
 
@@ -106,28 +114,11 @@ export default {
                         this.data.loadHtmlContent(item.src, item).then((data) => {
                             var html = data.toString();
 
-                            // 优化 HTML 内容中的 img 标签
                             if (item.optimizeImgTag !== false) {
-                                // 找到 img 标签
-                                var imgTags = html.match(/<img[^>]*>/gim);
-                                if (imgTags) {
-                                    // 替换 img 标签中 style 属性的内容, 追加样式
-                                    var appendStyle = 'display:block;width:100%;';
-                                    var newImgTags = imgTags.map(function(imgTag) {
-                                        var tag = '';
-                                        if (imgTag.indexOf('style') == -1) {
-                                            tag = imgTag.replace('<img', `<img style="${appendStyle}"`);
-                                        } else {
-                                            tag = imgTag.replace(/style\s*=\s*["']?([^'"]*)['"]?/gim, `style="$1;${appendStyle}"`);
-                                        }
-                                        return tag;
-                                    });
-
-                                    // 替换成新的 img 标签的内容
-                                    html = imgTags.reduce(function(html, imgTag, index) {
-                                        return html.replace(imgTag, newImgTags[index]);
-                                    }, html);
-                                }
+                                html = this._optimizeImgTag(html);
+                            }
+                            if (item.optimizeSectionTag !== false) {
+                                html = this._optimizeSectionTag(html);
                             }
 
                             item.content = html;
@@ -156,6 +147,36 @@ export default {
             this.setData({
                 buttons: buttons
             });
+        },
+
+        _optimizeImgTag: function(html) {  // 优化 HTML 内容中的 img 标签
+            // 找到 img 标签
+            var imgTags = html.match(/<img[^>]*>/gim);
+            if (imgTags) {
+                // 替换 img 标签中 style 属性的内容, 追加样式
+                var appendStyle = 'display:block;width:100%;';
+                var newImgTags = imgTags.map(function(imgTag) {
+                    var tag = '';
+                    if (imgTag.indexOf('style') == -1) {
+                        tag = imgTag.replace('<img', `<img style="${appendStyle}"`);
+                    } else {
+                        tag = imgTag.replace(/style\s*=\s*["']?([^'"]*)['"]?/gim, `style="$1;${appendStyle}"`);
+                    }
+                    return tag;
+                });
+
+                // 替换成新的 img 标签的内容
+                html = imgTags.reduce(function(html, imgTag, index) {
+                    return html.replace(imgTag, newImgTags[index]);
+                }, html);
+            }
+
+            return html;
+        },
+
+        _optimizeSectionTag: function(html) { // 优化 HTML 内容中的 section 标签
+            // rich-text 组件不支持渲染 section 标签
+            return html.replace(/<section/ig, '<div');
         },
 
         clickButton: function(event) {
